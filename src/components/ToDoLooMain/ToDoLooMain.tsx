@@ -78,6 +78,7 @@ export const ToDoLooMain = () => {
             </Box>
             <Button
               variant='contained'
+              color='secondary'
               sx={(theme) => ({
                 [theme.breakpoints.down(md)]: {
                   minWidth: '100%',

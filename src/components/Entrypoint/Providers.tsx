@@ -1,19 +1,28 @@
 import { ThemeProvider, useMediaQuery } from '@mui/material';
-import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
-import { themes } from '../../themes/themes';
+import { useEffect, useMemo } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { themesObject } from '../../themes/themes';
 import { App } from './App';
+import { setMode } from '../../redux/slice/prefSlice';
 
 export const Providers = () => {
-  const dark = useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+  const graphics = useAppSelector((s) => s.pref.graphics);
+  const { mode, themeId } = graphics;
+  const dispatch = useAppDispatch();
 
-  const theme = themes[dark ? 'mainDark' : 'mainLight'];
+  const theme = useMemo(() => themesObject[themeId].themes[mode], [graphics]);
+
+  useEffect(() => {
+    if (prefersDark && mode === 'light') {
+      console.log("🚀 ~ useEffect ~ 'dark':", 'dark');
+      dispatch(setMode('dark'));
+    }
+  }, [prefersDark]);
 
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   );
 };
