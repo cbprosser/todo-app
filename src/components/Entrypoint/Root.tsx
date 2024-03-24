@@ -15,7 +15,6 @@ export const Providers = () => {
 
   useEffect(() => {
     if (prefersDark && mode === 'light') {
-      console.log("🚀 ~ useEffect ~ 'dark':", 'dark');
       dispatch(setMode('dark'));
     }
   }, [prefersDark]);

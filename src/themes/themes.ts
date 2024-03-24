@@ -14,8 +14,8 @@ export const __themes = {
   __themeYesItsYellow,
   __themeGenerallyGreen,
   __themeBasicallyBlue,
-  __themeVeryViolet,
   __themeIronicallyIndigo,
+  __themeVeryViolet,
   __themePerfectlyPink,
 };
 

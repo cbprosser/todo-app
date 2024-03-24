@@ -14,9 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 const drawerWidth = 240;
-const navItems = ['Home', 'Login', 'About', 'Contact'];
+const navItems = ['Login'];
 
 export const ToDoLooAppBar = () => {
   const [state, setState] = useState({ isMobileOpen: false });
@@ -47,7 +48,12 @@ export const ToDoLooAppBar = () => {
             }}
           >
             {navItems.map((item) => (
-              <Button key={item} color='inherit'>
+              <Button
+                key={item}
+                component={RouterLink}
+                to={`/${item}`.toLowerCase()}
+                color='inherit'
+              >
                 {item}
               </Button>
             ))}
@@ -91,7 +97,11 @@ export const ToDoLooAppBar = () => {
             <List>
               {navItems.map((item) => (
                 <ListItem key={item} disablePadding>
-                  <ListItemButton sx={{ textAlign: 'center' }}>
+                  <ListItemButton
+                    component={RouterLink}
+                    to={`/${item}`.toLowerCase()}
+                    sx={{ textAlign: 'center' }}
+                  >
                     <ListItemText primary={item} />
                   </ListItemButton>
                 </ListItem>
