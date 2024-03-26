@@ -12,12 +12,16 @@ import {
   TextFieldProps,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../redux/slice/apiSlice';
 
 export const Login = () => {
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading, isSuccess }] = useLoginMutation({
+    fixedCacheKey: 'user',
+  });
+
+  const navigate = useNavigate();
 
   const [auth, setAuth] = useState<Parameters<typeof login>['0']>({
     username: '',
@@ -36,6 +40,10 @@ export const Login = () => {
       console.log('🚀 ~ handleSubmit ~ result:', result);
     } catch (error) {}
   };
+
+  useEffect(() => {
+    navigate('/');
+  }, [isSuccess]);
 
   return (
     <Container component='main' maxWidth='xs'>

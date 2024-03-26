@@ -35,3 +35,5 @@ const prefSlice = createSlice({
 export const { setTheme, setMode, setGraphics } = prefSlice.actions;
 
 export const prefReducer = prefSlice.reducer;
+
+export const prefPath = prefSlice.reducerPath;

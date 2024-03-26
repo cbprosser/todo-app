@@ -15,11 +15,13 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAppSelector } from '../../redux/hooks';
 
 const drawerWidth = 240;
 const navItems = ['Login'];
 
 export const ToDoLooAppBar = () => {
+  const { username } = useAppSelector((s) => s.user);
   const [state, setState] = useState({ isMobileOpen: false });
 
   const handleDrawerToggle = () =>
@@ -47,16 +49,20 @@ export const ToDoLooAppBar = () => {
               display: { xs: 'none', sm: 'block' },
             }}
           >
-            {navItems.map((item) => (
-              <Button
-                key={item}
-                component={RouterLink}
-                to={`/${item}`.toLowerCase()}
-                color='inherit'
-              >
-                {item}
-              </Button>
-            ))}
+            {username ? (
+              <Typography>{username}</Typography>
+            ) : (
+              navItems.map((item) => (
+                <Button
+                  key={item}
+                  component={RouterLink}
+                  to={`/${item}`.toLowerCase()}
+                  color='inherit'
+                >
+                  {item}
+                </Button>
+              ))
+            )}
           </Box>
           <IconButton
             size='large'
@@ -95,17 +101,23 @@ export const ToDoLooAppBar = () => {
             </Typography>
             <Divider />
             <List>
-              {navItems.map((item) => (
-                <ListItem key={item} disablePadding>
-                  <ListItemButton
-                    component={RouterLink}
-                    to={`/${item}`.toLowerCase()}
-                    sx={{ textAlign: 'center' }}
-                  >
-                    <ListItemText primary={item} />
-                  </ListItemButton>
+              {username ? (
+                <ListItem sx={{ textAlign: 'center' }}>
+                  <ListItemText primary={username} />
                 </ListItem>
-              ))}
+              ) : (
+                navItems.map((item) => (
+                  <ListItem key={item} disablePadding>
+                    <ListItemButton
+                      component={RouterLink}
+                      to={`/${item}`.toLowerCase()}
+                      sx={{ textAlign: 'center' }}
+                    >
+                      <ListItemText primary={item} />
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              )}
             </List>
           </Box>
         </Drawer>
