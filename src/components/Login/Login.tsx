@@ -14,16 +14,14 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '../../redux/slice/apiSlice';
+import { useLazyLoginQuery } from '../../redux/slice/apiSlice';
 
 export const Login = () => {
-  const [login, { isLoading, isSuccess }] = useLoginMutation({
-    fixedCacheKey: 'user',
-  });
+  const [triggerLogin, { isLoading, isSuccess }] = useLazyLoginQuery();
 
   const navigate = useNavigate();
 
-  const [auth, setAuth] = useState<Parameters<typeof login>['0']>({
+  const [auth, setAuth] = useState<Parameters<typeof triggerLogin>['0']>({
     username: '',
     password: '',
   });
@@ -36,13 +34,13 @@ export const Login = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const result = await login(auth);
+      const result = await triggerLogin(auth);
       console.log('🚀 ~ handleSubmit ~ result:', result);
     } catch (error) {}
   };
 
   useEffect(() => {
-    navigate('/');
+    isSuccess && navigate('/');
   }, [isSuccess]);
 
   return (

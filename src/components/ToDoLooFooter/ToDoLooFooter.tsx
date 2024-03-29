@@ -77,7 +77,9 @@ export const ToDoLooFooter = () => {
               onChange={handleThemeSelect}
             >
               {themesArray.map((theme) => (
-                <MenuItem value={theme.id}>{theme.name}</MenuItem>
+                <MenuItem key={theme.id} value={theme.id}>
+                  {theme.name}
+                </MenuItem>
               ))}
             </Select>
           </Box>
