@@ -42,6 +42,10 @@ export const api = createApi({
       login: builder.query<StringUser, AuthenticationBody>({
         query: (data) => ({ url: API.ENDPOINTS.LOGIN, method: 'post', data }),
       }),
+      logout: builder.mutation({
+        query: () => ({ url: API.ENDPOINTS.LOGOUT, method: 'post' }),
+        invalidatesTags: ['lists', 'list'],
+      }),
       refresh: builder.query<StringUser, undefined>({
         query: () => ({ url: API.ENDPOINTS.REFRESH, method: 'post' }),
       }),
@@ -178,6 +182,7 @@ export const api = createApi({
 export const {
   useLazyLoginQuery,
   useLazyRefreshQuery,
+  useLogoutMutation,
   useLazyGetListsQuery,
   useAddListMutation,
   useUpdateListMutation,

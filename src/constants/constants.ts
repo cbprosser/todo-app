@@ -5,6 +5,7 @@ export const COOKIES = {
 export const API = {
   ENDPOINTS: {
     LOGIN: '/auth/login',
+    LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
     LISTS: (username: string) => `/lists/${username}`,
     ADD_LIST: (username: string) => `/lists/${username}/add`,

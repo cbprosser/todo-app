@@ -25,6 +25,11 @@ const userSlice = createSlice({
         Object.keys(payload).forEach((key) => {
           state[key as keyof typeof state] = payload[key as keyof StringUser];
         });
+      })
+      .addMatcher(apiEndpoints.logout.matchFulfilled, (state) => {
+        Object.keys(state).forEach((key) => {
+          delete state[key as keyof typeof state];
+        });
       });
   },
 });
