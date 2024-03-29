@@ -31,53 +31,75 @@ import {
 } from '../../redux/slice/apiSlice';
 import { useNavigate } from 'react-router-dom';
 
+enum DIALOG_TYPE {
+  ADD,
+  UPDATE,
+  DELETE,
+}
+
+type State = {
+  listId: string;
+  title: string;
+  description: string;
+  count: number;
+  dialogOpen: boolean;
+  type?: DIALOG_TYPE;
+};
+
+const initialState: State = {
+  listId: '',
+  title: '',
+  description: '',
+  count: 0,
+  dialogOpen: false,
+};
+
 export const Lists = () => {
   const theme = useTheme();
+
   const navigate = useNavigate();
+
   const { username } = useAppSelector((s) => s.user);
+
   const [triggerGetLists, { data }] = useLazyGetListsQuery();
   const [addList] = useAddListMutation();
   const [updateList] = useUpdateListMutation();
   const [deleteList] = useDeleteListMutation();
-  const initialState = {
-    listId: '',
-    title: '',
-    description: '',
-    count: 0,
-    dialogOpen: false,
-    updateDialog: false,
-    deleteDialog: false,
-  };
+
   const [state, setState] = useState(initialState);
 
   const handleDialogOpen = ({
     open,
-    update,
-    del,
-    list,
+    type = state.type,
+    list = undefined,
   }: {
     open: boolean;
-    update?: boolean;
-    del?: boolean;
+    type?: DIALOG_TYPE;
     list?: any;
   }) => {
+    const listModifier =
+      type === DIALOG_TYPE.UPDATE || type === DIALOG_TYPE.DELETE
+        ? list
+        : type === DIALOG_TYPE.ADD && state.listId
+          ? initialState
+          : {};
+
     if (open) {
       setState((s) => ({
         ...s,
-        ...(list ? list : initialState),
+        ...listModifier,
         dialogOpen: open,
-        updateDialog: update || false,
-        deleteDialog: del || false,
+        type,
       }));
     }
+
     if (!open) {
       setState((s) => ({ ...s, dialogOpen: open }));
       setTimeout(() => {
         setState((s) => ({
           ...s,
-          ...(list ? list : initialState),
-          updateDialog: update || false,
-          deleteDialog: del || false,
+          ...listModifier,
+          type,
         }));
       }, theme.transitions.duration.leavingScreen);
     }
@@ -98,11 +120,14 @@ export const Lists = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { dialogOpen, updateDialog, deleteDialog, ...data } = state;
+    const { dialogOpen, type, ...data } = state;
     if (username) {
-      deleteDialog
+      type === DIALOG_TYPE.DELETE
         ? await deleteList({ listId: data.listId, username })
-        : await (updateDialog ? updateList : addList)({ ...data, username });
+        : await (type === DIALOG_TYPE.UPDATE ? updateList : addList)({
+            ...data,
+            username,
+          });
       setState(initialState);
       handleDialogOpen({ open: false });
     }
@@ -119,85 +144,97 @@ export const Lists = () => {
         <Typography
           variant='h5'
           textAlign='center'
-        >{`${username}'s Lists`}</Typography>
+        >{`${username}'s Lists (${data?.length || 0})`}</Typography>
       </Box>
       <Grid container spacing={2}>
         <Grid sm={12}>
           <Button
-            onClick={() => handleDialogOpen({ open: true, update: false })}
+            onClick={() =>
+              handleDialogOpen({ open: true, type: DIALOG_TYPE.ADD })
+            }
             fullWidth
             color='inherit'
           >
             New List
           </Button>
         </Grid>
-        {data?.map(({ count, created, description, listId, title }) => (
-          <Grid key={listId} sm={6} md={3} xl={2}>
-            <Card>
-              <CardActionArea onClick={handleNavToList} id={listId}>
-                <CardHeader title={title} subheader={created} />
-                <CardContent>
-                  <Typography
-                    variant='body2'
-                    sx={{
-                      display: '-webkit-box',
-                      '-webkit-line-clamp': '2',
-                      '-webkit-box-orient': 'vertical',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      height: '2rem',
-                      lineHeight: '1rem',
-                    }}
+        {data?.length ? (
+          data?.map(({ count, created, description, listId, title }) => (
+            <Grid key={listId} sm={6} md={3} xl={2}>
+              <Card>
+                <CardActionArea onClick={handleNavToList} id={listId}>
+                  <CardHeader title={title} subheader={created} />
+                  <CardContent>
+                    <Typography
+                      variant='body2'
+                      sx={{
+                        display: '-webkit-box',
+                        '-webkit-line-clamp': '2',
+                        '-webkit-box-orient': 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        height: '2rem',
+                        lineHeight: '1rem',
+                      }}
+                    >
+                      {description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+                <CardActions
+                  disableSpacing
+                  sx={(theme) => ({
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.getContrastText(
+                      theme.palette.primary.main
+                    ),
+                  })}
+                >
+                  <IconButton
+                    size='small'
+                    sx={{ color: 'inherit' }}
+                    onClick={() =>
+                      handleDialogOpen({
+                        open: true,
+                        type: DIALOG_TYPE.DELETE,
+                        list: { listId, title },
+                      })
+                    }
                   >
-                    {description}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              <CardActions
-                disableSpacing
-                sx={(theme) => ({
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.getContrastText(
-                    theme.palette.primary.main
-                  ),
-                })}
-              >
-                <IconButton
-                  size='small'
-                  sx={{ color: 'inherit' }}
-                  onClick={() =>
-                    handleDialogOpen({
-                      open: true,
-                      del: true,
-                      list: { listId, title },
-                    })
-                  }
-                >
-                  <Delete />
-                </IconButton>
-                <IconButton
-                  size='small'
-                  sx={{ color: 'inherit' }}
-                  onClick={() =>
-                    handleDialogOpen({
-                      open: true,
-                      update: true,
-                      list: { listId, title, description },
-                    })
-                  }
-                >
-                  <Edit />
-                </IconButton>
-                <Chip
-                  label={`${count} items`}
-                  sx={{ ml: 'auto', color: 'inherit', borderColor: 'inherit' }}
-                  variant='outlined'
-                  size='small'
-                />
-              </CardActions>
-            </Card>
+                    <Delete />
+                  </IconButton>
+                  <IconButton
+                    size='small'
+                    sx={{ color: 'inherit' }}
+                    onClick={() =>
+                      handleDialogOpen({
+                        open: true,
+                        type: DIALOG_TYPE.UPDATE,
+                        list: { listId, title, description },
+                      })
+                    }
+                  >
+                    <Edit />
+                  </IconButton>
+                  <Chip
+                    label={`${count} items`}
+                    sx={{
+                      ml: 'auto',
+                      color: 'inherit',
+                      borderColor: 'inherit',
+                    }}
+                    variant='outlined'
+                    size='small'
+                  />
+                </CardActions>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Grid sm={12} textAlign='center'>
+            No Lists Found
           </Grid>
-        ))}
+        )}
       </Grid>
       <Dialog
         open={state.dialogOpen}
@@ -208,7 +245,7 @@ export const Lists = () => {
           onSubmit: handleSubmit,
         }}
       >
-        {state.deleteDialog ? (
+        {state.type === DIALOG_TYPE.DELETE ? (
           <>
             <DialogTitle
               sx={(theme) => ({
@@ -216,7 +253,7 @@ export const Lists = () => {
                 color: theme.palette.getContrastText(
                   theme.palette.primary.main
                 ),
-                mb: 2
+                mb: 2,
               })}
             >
               Confirm Delete
@@ -245,10 +282,10 @@ export const Lists = () => {
                 color: theme.palette.getContrastText(
                   theme.palette.primary.main
                 ),
-                mb: 2
+                mb: 2,
               })}
             >
-              {`${state.updateDialog ? 'Update' : 'New'} List`}
+              {`${state.type === DIALOG_TYPE.UPDATE ? 'Update' : 'New'} List`}
             </DialogTitle>
             <DialogContent>
               <TextField
