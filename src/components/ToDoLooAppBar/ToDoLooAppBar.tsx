@@ -1,3 +1,4 @@
+import { AccountCircle } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -16,20 +17,39 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { AccountCircle } from '@mui/icons-material';
-import { api, useLogoutMutation } from '../../redux/slice/apiSlice';
+import { useLogoutMutation } from '../../redux/slice/apiEndpoints/auth';
+import { api } from '../../redux/slice/apiSlice';
 
 const drawerWidth = 240;
-const navItems = ['Login'];
+const enhancedNavItems = [
+  {
+    route: 'register',
+    display: 'Sign Up',
+    routeBlacklist: ['login', 'register', 'forgot'],
+  },
+  {
+    route: 'login',
+    display: 'Log in',
+    routeBlacklist: ['login', 'register', 'forgot'],
+  },
+];
 
 type State = { isMobileOpen: boolean; loginAnchor: null | HTMLElement };
 
 const initialState: State = { isMobileOpen: false, loginAnchor: null };
 
 export const ToDoLooAppBar = () => {
+  const { pathname } = useLocation();
+  const navItems = useMemo(() => {
+    return enhancedNavItems.filter(
+      ({ routeBlacklist }) =>
+        !routeBlacklist.some((route) => pathname.includes(route))
+    );
+  }, [pathname]);
+
   const { username } = useAppSelector((s) => s.user);
 
   const [state, setState] = useState(initialState);
@@ -101,17 +121,19 @@ export const ToDoLooAppBar = () => {
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </Menu>
               </Box>
-            ) : (
-              navItems.map((item) => (
+            ) : navItems.length ? (
+              navItems.map(({ route, display }) => (
                 <Button
-                  key={item}
+                  key={route}
                   component={RouterLink}
-                  to={`/${item}`.toLowerCase()}
+                  to={`/${route}`.toLowerCase()}
                   color='inherit'
                 >
-                  {item}
+                  {display}
                 </Button>
               ))
+            ) : (
+              <></>
             )}
           </Box>
           <IconButton
@@ -126,52 +148,56 @@ export const ToDoLooAppBar = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <nav>
-        <Drawer
-          anchor='right'
-          container={container}
-          variant='temporary'
-          open={state.isMobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-            },
-          }}
-        >
-          <Box
-            onClick={handleDrawerToggle}
-            sx={{ textAlign: 'center', height: '100%' }}
+      {navItems.length ? (
+        <nav>
+          <Drawer
+            anchor='right'
+            container={container}
+            variant='temporary'
+            open={state.isMobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: drawerWidth,
+              },
+            }}
           >
-            <Typography variant='h6' sx={{ my: 2 }}>
-              ToDoLoos
-            </Typography>
-            <Divider />
-            <List>
-              {username ? (
-                <ListItem sx={{ textAlign: 'center' }}>
-                  <ListItemText primary={username} />
-                </ListItem>
-              ) : (
-                navItems.map((item) => (
-                  <ListItem key={item} disablePadding>
-                    <ListItemButton
-                      component={RouterLink}
-                      to={`/${item}`.toLowerCase()}
-                      sx={{ textAlign: 'center' }}
-                    >
-                      <ListItemText primary={item} />
-                    </ListItemButton>
+            <Box
+              onClick={handleDrawerToggle}
+              sx={{ textAlign: 'center', height: '100%' }}
+            >
+              <Typography variant='h6' sx={{ my: 2 }}>
+                ToDoLoos
+              </Typography>
+              <Divider />
+              <List>
+                {username ? (
+                  <ListItem sx={{ textAlign: 'center' }}>
+                    <ListItemText primary={username} />
                   </ListItem>
-                ))
-              )}
-            </List>
-          </Box>
-        </Drawer>
-      </nav>
+                ) : (
+                  navItems.map(({ display, route }) => (
+                    <ListItem key={route} disablePadding>
+                      <ListItemButton
+                        component={RouterLink}
+                        to={`/${route}`.toLowerCase()}
+                        sx={{ textAlign: 'center' }}
+                      >
+                        <ListItemText primary={display} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                )}
+              </List>
+            </Box>
+          </Drawer>
+        </nav>
+      ) : (
+        <></>
+      )}
     </Box>
   );
 };

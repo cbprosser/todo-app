@@ -1,11 +1,11 @@
 import { CssBaseline } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 import { useAppSelector } from '../../redux/hooks';
-import { useLazyRefreshQuery } from '../../redux/slice/apiSlice';
 import { ToDoLooAppBar } from '../ToDoLooAppBar/ToDoLooAppBar';
 import { ToDoLooFooter } from '../ToDoLooFooter/ToDoLooFooter';
 import { ToDoLooMain } from '../ToDoLooMain/ToDoLooMain';
 import { COOKIES } from '../../constants/constants';
+import { useLazyRefreshQuery } from '../../redux/slice/apiEndpoints/auth';
 
 export const App = () => {
   const hasfgptCookie = useMemo(

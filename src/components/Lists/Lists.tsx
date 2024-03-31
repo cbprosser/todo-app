@@ -22,14 +22,14 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../redux/hooks';
 import {
   useAddListMutation,
   useDeleteListMutation,
   useLazyGetListsQuery,
   useUpdateListMutation,
-} from '../../redux/slice/apiSlice';
-import { useNavigate } from 'react-router-dom';
+} from '../../redux/slice/apiEndpoints/lists';
 
 enum DIALOG_TYPE {
   ADD,

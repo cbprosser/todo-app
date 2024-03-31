@@ -32,7 +32,6 @@ export const axiosBaseQuery =
         headers,
         withCredentials: true,
       });
-      console.log('🚀 ~ result:', result);
     } catch (err) {
       let message = 'Unknown Error';
       let status = 500;

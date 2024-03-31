@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useLazyLoginQuery } from '../../redux/slice/apiSlice';
+import { useLazyLoginQuery } from '../../redux/slice/apiEndpoints/auth';
 
 export const Login = () => {
   const [triggerLogin, { isLoading, isSuccess }] = useLazyLoginQuery();
@@ -34,8 +34,7 @@ export const Login = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const result = await triggerLogin(auth);
-      console.log('🚀 ~ handleSubmit ~ result:', result);
+      await triggerLogin(auth);
     } catch (error) {}
   };
 
@@ -59,7 +58,12 @@ export const Login = () => {
         <Typography component='h1' variant='h5'>
           Sign in
         </Typography>
-        <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box
+          component='form'
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{ mt: 1, minWidth: '100%' }}
+        >
           <TextField
             onChange={handleChange}
             value={auth.username}

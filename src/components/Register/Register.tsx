@@ -3,24 +3,40 @@ import {
   Avatar,
   Box,
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
   Grid,
   Link,
   TextField,
+  TextFieldProps,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useLazySignUpQuery } from '../../redux/slice/apiEndpoints/user';
+import { SignupBody } from '../../types/models';
 
 export const Register = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+
+  const [triggerSignUp] = useLazySignUpQuery();
+
+  const [state, setState] = useState<SignupBody>({
+    email: '',
+    username: '',
+    password: '',
+  });
+
+  const handleChange: TextFieldProps['onChange'] = (event) => {
+    const { value, id } = event.target;
+    setState((s) => ({ ...s, [id]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const result = await triggerSignUp(state);
+    if (!result.error) {
+      navigate('/');
+    }
   };
 
   return (
@@ -39,10 +55,28 @@ export const Register = () => {
         <Typography component='h1' variant='h5'>
           Sign up
         </Typography>
-        <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box
+          component='form'
+          noValidate
+          onSubmit={handleSubmit}
+          sx={{ mt: 3, minWidth: '100%' }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
+                value={state.username}
+                onChange={handleChange}
+                required
+                fullWidth
+                id='username'
+                label='Username'
+                name='username'
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                value={state.email}
+                onChange={handleChange}
                 required
                 fullWidth
                 id='email'
@@ -53,6 +87,8 @@ export const Register = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
+                value={state.password}
+                onChange={handleChange}
                 required
                 fullWidth
                 name='password'
@@ -60,12 +96,6 @@ export const Register = () => {
                 type='password'
                 id='password'
                 autoComplete='new-password'
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value='allowExtraEmails' color='primary' />}
-                label='I want to receive inspiration, marketing promotions and updates via email.'
               />
             </Grid>
           </Grid>

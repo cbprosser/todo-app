@@ -24,7 +24,7 @@ import {
   useDeleteItemFromListMutation,
   useLazyGetListQuery,
   useUpdateItemInListMutation,
-} from '../../redux/slice/apiSlice';
+} from '../../redux/slice/apiEndpoints/list';
 import { Delete, Edit } from '@mui/icons-material';
 
 enum DIALOG_TYPE {
