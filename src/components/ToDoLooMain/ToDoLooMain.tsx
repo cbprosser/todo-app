@@ -84,7 +84,7 @@ export const ToDoLooMain = () => {
         <Route path='/lists/:listId' element={<List />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register/*' element={<Register />} />
-        <Route path='/forgot' element={<Forgot />} />
+        <Route path='/forgot/*' element={<Forgot />} />
       </Routes>
       <Backdrop
         open={isAnyApiLoading}

@@ -1,4 +1,5 @@
 import { AccountCircle } from '@mui/icons-material';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -86,13 +87,34 @@ export const ToDoLooAppBar = () => {
             justifyContent: { xs: 'end' },
           }}
         >
-          <Typography
-            variant='h6'
-            component='div'
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-          >
-            ToDoLoos
-          </Typography>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+            <Box
+              component={RouterLink}
+              to='/'
+              sx={{
+                color: 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'inherit',
+              }}
+            >
+              <Box
+                sx={(theme) => ({
+                  height: theme.spacing(3),
+                  width: theme.spacing(3),
+                  mr: 1,
+                })}
+              >
+                <ViewListIcon />
+              </Box>
+              <Typography
+                variant='h6'
+                sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+              >
+                ToDoLoos
+              </Typography>
+            </Box>
+          </Box>
           <Box
             sx={{
               display: { xs: 'none', sm: 'block' },

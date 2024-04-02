@@ -7,6 +7,8 @@ export const API = {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
+    FORGOT: '/auth/forgot',
+    RECOVER: (id: string) => `/auth/recover/${id}`,
     SIGNUP: '/users/save',
     CONFIRM_REGISTRATION: (id: string) => `/users/confirm/${id}`,
     LISTS: (username: string) => `/lists/${username}`,

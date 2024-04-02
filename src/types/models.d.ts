@@ -1,3 +1,5 @@
+import { Simplify } from 'type-fest';
+
 export type AuthenticationBody = {
   username: string;
   password: string;
@@ -6,6 +8,14 @@ export type AuthenticationBody = {
 export type SignupBody = {
   username: string;
   email: string;
+  password: string;
+};
+
+export type ForgotBody = {
+  email: string;
+};
+
+export type RecoverBody = {
   password: string;
 }
 
