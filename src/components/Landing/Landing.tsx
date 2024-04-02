@@ -9,8 +9,12 @@ import {
   useTheme,
 } from '@mui/material';
 import { useMemo } from 'react';
+import { useAppDispatch } from '../../redux/hooks';
+import { pushNotification } from '../../redux/slice/notificationSlice';
 
 export const Landing = () => {
+  const dispatch = useAppDispatch();
+
   const theme = useTheme();
   const md = 'md';
   const heroRightBorderRadius = useMemo(
@@ -76,6 +80,26 @@ export const Landing = () => {
                   minWidth: '100%',
                 },
               })}
+              onClick={() => {
+                dispatch(
+                  pushNotification({
+                    key: new Date().getTime(),
+                    level: (['error', 'info', 'success', 'warning'] as const)[
+                      (Math.random() * 4) << 0
+                    ],
+                    message:
+                      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro aliquid laudantium deserunt, praesentium eaque explicabo saepe. Quas atque tenetur, vero nisi facilis corrupti temporibus maiores quasi odit praesentium animi maxime.',
+                    title: Math.random() > 0.5 ? 'Title' : undefined,
+                    variant:
+                      Math.random() > 0.5
+                        ? (['filled', 'outlined', 'standard'] as const)[
+                            (Math.random() * 3) << 0
+                          ]
+                        : undefined,
+                    duration: (Math.random() * 5000) << 0,
+                  })
+                );
+              }}
             >
               Get Started
             </Button>

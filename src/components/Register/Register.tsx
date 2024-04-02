@@ -10,15 +10,40 @@ import {
   TextFieldProps,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useLazySignUpQuery } from '../../redux/slice/apiEndpoints/user';
+import { useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
+import * as uuid from 'uuid';
+import {
+  useLazyConfirmRegistrationQuery,
+  useLazySignUpQuery,
+} from '../../redux/slice/apiEndpoints/user';
 import { SignupBody } from '../../types/models';
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const id = useMemo(() => {
+    const split = pathname.split('/');
+
+    if (split.length === 3) {
+      const id = split.pop();
+      if (id) {
+        try {
+          uuid.parse(id);
+          return id;
+        } catch (error) {
+          if (!(error instanceof TypeError)) {
+            throw error;
+          }
+        }
+      }
+    }
+    return undefined;
+  }, [pathname]);
 
   const [triggerSignUp] = useLazySignUpQuery();
+  const [triggerConfirmRegistration] = useLazyConfirmRegistrationQuery();
 
   const [state, setState] = useState<SignupBody>({
     email: '',
@@ -38,6 +63,19 @@ export const Register = () => {
       navigate('/');
     }
   };
+
+  useEffect(() => {
+    const triggerConfirmRegistrationEffect = async () => {
+      if (id) {
+        const result = await triggerConfirmRegistration({ id });
+        if (result.isSuccess) {
+          navigate('/login');
+        }
+      }
+    };
+
+    triggerConfirmRegistrationEffect();
+  }, [id]);
 
   return (
     <Container component='main' maxWidth='xs'>

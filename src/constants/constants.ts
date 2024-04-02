@@ -8,6 +8,7 @@ export const API = {
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
     SIGNUP: '/users/save',
+    CONFIRM_REGISTRATION: (id: string) => `/users/confirm/${id}`,
     LISTS: (username: string) => `/lists/${username}`,
     ADD_LIST: (username: string) => `/lists/${username}/add`,
     UPDATE_LIST: (username: string) => `/lists/${username}/update`,

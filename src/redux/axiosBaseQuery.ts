@@ -19,7 +19,10 @@ export const axiosBaseQuery =
       headers?: AxiosRequestConfig['headers'];
     },
     unknown,
-    unknown
+    {
+      data: any;
+      status: number;
+    }
   > =>
   async ({ url, method, data, params, headers }) => {
     let result: AxiosResponse<any, any> | undefined;
@@ -33,11 +36,12 @@ export const axiosBaseQuery =
         withCredentials: true,
       });
     } catch (err) {
-      let message = 'Unknown Error';
+      let errorData: any = 'Unknown Error';
       let status = 500;
       if (err instanceof AxiosError) {
         status = err.response?.status ?? status;
-        data = err.response?.data ?? message;
+        errorData = err.response?.data ?? errorData;
+        console.log("🚀 ~ err.response?.data:", err.response?.data)
 
         if (status === 401) {
           try {
@@ -56,17 +60,14 @@ export const axiosBaseQuery =
               headers,
               withCredentials: true,
             });
+            return { data: result?.data };
           } catch (error) {}
-          return { data: result?.data };
         }
-      }
-      if (err instanceof Error) {
-        message = err.message;
       }
       return {
         error: {
+          data: errorData,
           status,
-          data: message,
         },
       };
     }
