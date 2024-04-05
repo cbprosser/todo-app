@@ -1,24 +1,28 @@
 import { API } from '../../../constants/constants';
 import {
-  StringUser,
   AuthenticationBody,
   ForgotBody,
   RecoverBody,
+  StringUser,
 } from '../../../types/models';
 import { api } from '../apiSlice';
 import { pushNotification, shiftNotification } from '../notificationSlice';
 
-const authEndpoints = api.injectEndpoints({
+export const authEndpoints = api.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.query<StringUser, AuthenticationBody>({
+    login: builder.mutation<StringUser, AuthenticationBody>({
       query: (data) => ({ url: API.ENDPOINTS.LOGIN, method: 'post', data }),
+      invalidatesTags: ['pref'],
     }),
     logout: builder.mutation({
       query: () => ({ url: API.ENDPOINTS.LOGOUT, method: 'post' }),
-      invalidatesTags: ['lists', 'list'],
+      onQueryStarted: () => {
+        api.util.resetApiState();
+      },
     }),
-    refresh: builder.query<StringUser, undefined>({
+    refresh: builder.mutation<StringUser, undefined>({
       query: () => ({ url: API.ENDPOINTS.REFRESH, method: 'post' }),
+      invalidatesTags: ['pref'],
     }),
     forgot: builder.query<void, ForgotBody>({
       query: (data) => ({ url: API.ENDPOINTS.FORGOT, method: 'post', data }),
@@ -127,8 +131,8 @@ const authEndpoints = api.injectEndpoints({
 });
 
 export const {
-  useLazyLoginQuery,
-  useLazyRefreshQuery,
+  useLoginMutation,
+  useRefreshMutation,
   useLogoutMutation,
   useLazyForgotQuery,
   useLazyRecoverQuery,

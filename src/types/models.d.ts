@@ -40,3 +40,12 @@ export type StringItem = {
   description: string;
   created: string;
 };
+
+export type UserPrefs = {
+  graphics: UserGraphicsPrefs;
+};
+
+export type UserGraphicsPrefs = {
+  mode: 'dark' | 'light';
+  themeId: AppThemeId;
+};

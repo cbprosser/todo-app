@@ -8,35 +8,66 @@ import {
   darken,
   lighten,
 } from '@mui/material';
+import isEqual from 'lodash/isEqual';
 import { useEffect, useState } from 'react';
-import { useAppDispatch } from '../../redux/hooks';
-import { setGraphics } from '../../redux/slice/prefSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import {
+  useLazyGetUserPrefsQuery,
+  useSaveUserPrefsMutation,
+} from '../../redux/slice/apiEndpoints/user';
+import { setGraphics, setPrefs } from '../../redux/slice/prefSlice';
 import { themesArray } from '../../themes/themes';
 import { AppThemeId } from '../../themes/themes.types';
+import { UserPrefs } from '../../types/models';
 
+const initialState: UserPrefs['graphics'] = {
+  themeId: 'themeReallyRed',
+  mode: 'dark',
+};
 export const ToDoLooFooter = () => {
+  const { username } = useAppSelector((s) => s.user);
+
   const dispatch = useAppDispatch();
-  const [state, setState] = useState<{ theme: AppThemeId; darkMode: boolean }>({
-    theme: 'themeReallyRed',
-    darkMode: true,
-  });
+  const [state, setState] = useState(initialState);
 
   const handleThemeSelect: SelectProps['onChange'] = (event) => {
     const { value } = event.target;
-    setState((s) => ({ ...s, theme: value as AppThemeId }));
+    setState((s) => ({ ...s, themeId: value as AppThemeId }));
   };
 
   const handleDarkModeToggle = () =>
-    setState((s) => ({ ...s, darkMode: !s.darkMode }));
+    setState((s) => ({ ...s, mode: s.mode === 'dark' ? 'light' : 'dark' }));
+
+  const [triggerGetUserPrefs, { isUninitialized, data: prefs }] =
+    useLazyGetUserPrefsQuery();
+  const [triggerSaveUserPrefs] = useSaveUserPrefsMutation();
 
   useEffect(() => {
-    dispatch(
-      setGraphics({
-        mode: state.darkMode ? 'dark' : 'light',
-        themeId: state.theme,
-      })
-    );
-  }, [state]);
+    if (!username && !isEqual(initialState, state)) {
+      setState(initialState);
+      dispatch(setGraphics(initialState));
+    }
+    if (!username) {
+      return;
+    }
+    if (isUninitialized && username) {
+      const asyncTriggerGetPrefs = async () => {
+        const resp = (await triggerGetUserPrefs({ username })).data;
+        if (resp) {
+          setState(resp.graphics);
+          dispatch(setPrefs(resp));
+          return;
+        }
+
+        triggerSaveUserPrefs({ username, graphics: state });
+      };
+      asyncTriggerGetPrefs();
+      return;
+    }
+    if (username && prefs && !isEqual(prefs.graphics, state)) {
+      triggerSaveUserPrefs({ username, graphics: state });
+    }
+  }, [isUninitialized, username, state, prefs]);
 
   return (
     <Box
@@ -63,7 +94,7 @@ export const ToDoLooFooter = () => {
           <Box flexBasis='10%'>
             <Switch
               size='small'
-              checked={state.darkMode}
+              checked={state.mode === 'dark'}
               onChange={handleDarkModeToggle}
             />
           </Box>
@@ -73,7 +104,7 @@ export const ToDoLooFooter = () => {
               sx={{ float: 'right' }}
               size='small'
               variant='standard'
-              value={state.theme}
+              value={state.themeId}
               onChange={handleThemeSelect}
             >
               {themesArray.map((theme) => (

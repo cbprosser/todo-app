@@ -1,12 +1,8 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { AppThemeId } from '../../themes/themes.types';
+import { UserPrefs } from '../../types/models';
 
-const initialState: {
-  graphics: {
-    mode: 'dark' | 'light';
-    themeId: AppThemeId;
-  };
-} = {
+const initialState: UserPrefs = {
   graphics: {
     mode: 'light',
     themeId: 'themeReallyRed',
@@ -17,6 +13,12 @@ const prefSlice = createSlice({
   name: 'pref',
   initialState,
   reducers: {
+    setPrefs: (state, { payload }: PayloadAction<UserPrefs>) => {
+      Object.keys(state).forEach((key) => {
+        state[key as keyof typeof state] =
+          payload[key as keyof UserPrefs] ?? state[key as keyof typeof state];
+      });
+    },
     setTheme: (state, { payload }: PayloadAction<AppThemeId>) => {
       state.graphics.themeId = payload;
     },
@@ -32,7 +34,7 @@ const prefSlice = createSlice({
   },
 });
 
-export const { setTheme, setMode, setGraphics } = prefSlice.actions;
+export const { setPrefs, setTheme, setMode, setGraphics } = prefSlice.actions;
 
 export const prefReducer = prefSlice.reducer;
 

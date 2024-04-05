@@ -11,6 +11,7 @@ export const API = {
     RECOVER: (id: string) => `/auth/recover/${id}`,
     SIGNUP: '/users/save',
     CONFIRM_REGISTRATION: (id: string) => `/users/confirm/${id}`,
+    USER_PREFS: (username: string) => `/prefs/${username}`,
     LISTS: (username: string) => `/lists/${username}`,
     ADD_LIST: (username: string) => `/lists/${username}/add`,
     UPDATE_LIST: (username: string) => `/lists/${username}/update`,

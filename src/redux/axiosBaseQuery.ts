@@ -5,7 +5,7 @@ import axios, {
   AxiosResponse,
   Method,
 } from 'axios';
-import { API } from '../constants/constants';
+import { API, COOKIES } from '../constants/constants';
 
 export const axiosBaseQuery =
   (
@@ -27,6 +27,7 @@ export const axiosBaseQuery =
   async ({ url, method, data, params, headers }) => {
     let result: AxiosResponse<any, any> | undefined;
     try {
+      console.log(url, method, data);
       result = await axios({
         url: baseUrl + url,
         method,
@@ -39,11 +40,11 @@ export const axiosBaseQuery =
       let errorData: any = 'Unknown Error';
       let status = 500;
       if (err instanceof AxiosError) {
+        const ck = document.cookie;
         status = err.response?.status ?? status;
         errorData = err.response?.data ?? errorData;
-        console.log("🚀 ~ err.response?.data:", err.response?.data)
 
-        if (status === 401) {
+        if (status === 401 && ck.includes(COOKIES.FGPT)) {
           try {
             await axios({
               url: baseUrl + API.ENDPOINTS.REFRESH,

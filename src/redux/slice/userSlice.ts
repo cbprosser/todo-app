@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { apiEndpoints } from './apiSlice';
+import { authEndpoints } from './apiEndpoints/auth';
 
 type StringUser = {
   userId: string;
@@ -16,17 +16,17 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addMatcher(apiEndpoints.login.matchFulfilled, (state, { payload }) => {
+      .addMatcher(authEndpoints.endpoints.login.matchFulfilled, (state, { payload }) => {
         Object.keys(payload).forEach((key) => {
           state[key as keyof typeof state] = payload[key as keyof StringUser];
         });
       })
-      .addMatcher(apiEndpoints.refresh.matchFulfilled, (state, { payload }) => {
+      .addMatcher(authEndpoints.endpoints.refresh.matchFulfilled, (state, { payload }) => {
         Object.keys(payload).forEach((key) => {
           state[key as keyof typeof state] = payload[key as keyof StringUser];
         });
       })
-      .addMatcher(apiEndpoints.logout.matchFulfilled, (state) => {
+      .addMatcher(authEndpoints.endpoints.logout.matchFulfilled, (state) => {
         Object.keys(state).forEach((key) => {
           delete state[key as keyof typeof state];
         });

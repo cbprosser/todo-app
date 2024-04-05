@@ -7,7 +7,7 @@ export const api = createApi({
   baseQuery: axiosBaseQuery({
     baseUrl: `http://localhost:8080/${apiVersion}`,
   }),
-  tagTypes: ['lists', 'list'],
+  tagTypes: ['lists', 'list', 'pref'],
   endpoints: () => ({}),
 });
 
@@ -16,5 +16,3 @@ export const apiReducer = api.reducer;
 export const apiPath = api.reducerPath;
 
 export const apiMiddleware = api.middleware;
-
-export const apiEndpoints = api.endpoints;

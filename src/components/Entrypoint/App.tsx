@@ -5,7 +5,7 @@ import { ToDoLooAppBar } from '../ToDoLooAppBar/ToDoLooAppBar';
 import { ToDoLooFooter } from '../ToDoLooFooter/ToDoLooFooter';
 import { ToDoLooMain } from '../ToDoLooMain/ToDoLooMain';
 import { COOKIES } from '../../constants/constants';
-import { useLazyRefreshQuery } from '../../redux/slice/apiEndpoints/auth';
+import { useRefreshMutation } from '../../redux/slice/apiEndpoints/auth';
 
 export const App = () => {
   const hasfgptCookie = useMemo(
@@ -13,7 +13,7 @@ export const App = () => {
     []
   );
   const { username } = useAppSelector((s) => s.user);
-  const [triggerRefresh] = useLazyRefreshQuery();
+  const [triggerRefresh] = useRefreshMutation();
 
   useEffect(() => {
     if (!username && hasfgptCookie) {

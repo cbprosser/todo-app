@@ -1,9 +1,10 @@
 import { API } from '../../../constants/constants';
-import { SignupBody, StringUser } from '../../../types/models';
+import { SignupBody, StringUser, UserPrefs } from '../../../types/models';
 import { api } from '../apiSlice';
 import { pushNotification, shiftNotification } from '../notificationSlice';
+import { setPrefs } from '../prefSlice';
 
-const userEndpoints = api.injectEndpoints({
+export const userEndpoints = api.injectEndpoints({
   endpoints: (builder) => ({
     signUp: builder.query<StringUser, SignupBody>({
       query: (data) => ({ url: API.ENDPOINTS.SIGNUP, method: 'post', data }),
@@ -62,9 +63,32 @@ const userEndpoints = api.injectEndpoints({
         method: 'get',
       }),
     }),
+    getUserPrefs: builder.query<UserPrefs, { username: string }>({
+      query: ({ username }) => ({
+        url: API.ENDPOINTS.USER_PREFS(username),
+        method: 'get',
+      }),
+      providesTags: ['pref'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        const newPrefs = (await queryFulfilled).data;
+        dispatch(setPrefs(newPrefs));
+      },
+    }),
+    saveUserPrefs: builder.mutation<void, UserPrefs & { username: string }>({
+      query: ({ username, ...data }) => ({
+        url: API.ENDPOINTS.USER_PREFS(username),
+        method: 'post',
+        data,
+      }),
+      invalidatesTags: ['pref'],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useLazySignUpQuery, useLazyConfirmRegistrationQuery } =
-  userEndpoints;
+export const {
+  useLazySignUpQuery,
+  useLazyConfirmRegistrationQuery,
+  useLazyGetUserPrefsQuery,
+  useSaveUserPrefsMutation,
+} = userEndpoints;

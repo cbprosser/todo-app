@@ -40,3 +40,22 @@ Used to fetch data asyncronously and store state between components.
 ### Axios
 For handling network calls.
 
+## To Do
+* List Item Enhancements
+  * Add order column for sorting.
+  * Add checkbox logic
+  * Add different display versions ???
+* List Enhancements
+  * Add order column for sorting.
+  * Add different Display options
+* Prefs Enhancements
+  * Create modeled version for server.
+  * Add version to object to compare values
+* User Enhancements
+  * Username restrictions
+    * length
+    * characters
+  * Password restrictions
+    * length
+    * characters
+  * Allow username change

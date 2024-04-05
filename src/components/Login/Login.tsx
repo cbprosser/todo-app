@@ -14,10 +14,10 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useLazyLoginQuery } from '../../redux/slice/apiEndpoints/auth';
+import { useLoginMutation } from '../../redux/slice/apiEndpoints/auth';
 
 export const Login = () => {
-  const [triggerLogin, { isLoading, isSuccess }] = useLazyLoginQuery();
+  const [triggerLogin, { isLoading, isSuccess }] = useLoginMutation();
 
   const navigate = useNavigate();
 
