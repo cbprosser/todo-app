@@ -1,4 +1,4 @@
-import { Simplify } from 'type-fest';
+import { AppThemeKey } from '../themes/themes.types';
 
 export type AuthenticationBody = {
   username: string;
@@ -47,5 +47,5 @@ export type UserPrefs = {
 
 export type UserGraphicsPrefs = {
   mode: 'dark' | 'light';
-  themeId: AppThemeId;
+  themeId: AppThemeKey;
 };

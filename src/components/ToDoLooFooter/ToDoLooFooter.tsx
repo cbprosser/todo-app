@@ -17,7 +17,7 @@ import {
 } from '../../redux/slice/apiEndpoints/user';
 import { setGraphics, setPrefs } from '../../redux/slice/prefSlice';
 import { themesArray } from '../../themes/themes';
-import { AppThemeId } from '../../themes/themes.types';
+import { AppThemeKey } from '../../themes/themes.types';
 import { UserPrefs } from '../../types/models';
 
 const initialState: UserPrefs['graphics'] = {
@@ -32,7 +32,7 @@ export const ToDoLooFooter = () => {
 
   const handleThemeSelect: SelectProps['onChange'] = (event) => {
     const { value } = event.target;
-    setState((s) => ({ ...s, themeId: value as AppThemeId }));
+    setState((s) => ({ ...s, themeId: value as AppThemeKey }));
   };
 
   const handleDarkModeToggle = () =>

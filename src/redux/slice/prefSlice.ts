@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { AppThemeId } from '../../themes/themes.types';
+import { AppThemeKey } from '../../themes/themes.types';
 import { UserPrefs } from '../../types/models';
 
 const initialState: UserPrefs = {
@@ -19,7 +19,7 @@ const prefSlice = createSlice({
           payload[key as keyof UserPrefs] ?? state[key as keyof typeof state];
       });
     },
-    setTheme: (state, { payload }: PayloadAction<AppThemeId>) => {
+    setTheme: (state, { payload }: PayloadAction<AppThemeKey>) => {
       state.graphics.themeId = payload;
     },
     setMode: (state, { payload }: PayloadAction<'dark' | 'light'>) => {

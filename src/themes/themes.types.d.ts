@@ -22,6 +22,4 @@ const extractNames = (<T, U>(p: readonly AppThemeGeneric<T, U>[]) => p)(
 
 export type AppThemeName = (typeof extractNames)[number]['name'];
 
-export type AppThemeId = (typeof extractNames)[number]['id'];
-
-export type AppTheme = AppThemeGeneric<AppThemeName, AppThemeId>;
+export type AppTheme = AppThemeGeneric<AppThemeName, AppThemeKey>;

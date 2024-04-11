@@ -13,6 +13,52 @@ export const authEndpoints = api.injectEndpoints({
     login: builder.mutation<StringUser, AuthenticationBody>({
       query: (data) => ({ url: API.ENDPOINTS.LOGIN, method: 'post', data }),
       invalidatesTags: ['pref'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled, requestId }) => {
+        dispatch(
+          pushNotification({
+            key: `${requestId}-begin`,
+            level: 'info',
+            message: 'Sending request to log in.',
+          })
+        );
+        try {
+          await queryFulfilled;
+
+          dispatch(shiftNotification());
+          dispatch(
+            pushNotification({
+              key: `${requestId}-success`,
+              level: 'success',
+              message:
+                'Successfully logged in.',
+            })
+          );
+        } catch (thrownError) {
+          if (
+            typeof thrownError === 'object' &&
+            thrownError !== null &&
+            Object.hasOwn(thrownError, 'error')
+          ) {
+            const { error } = thrownError as {
+              error: { data: any; status: number };
+            };
+            let message = error.data ?? undefined;
+            if (typeof error.data === 'object' && error.data !== null) {
+              message = error.data.message;
+            }
+            dispatch(shiftNotification());
+            dispatch(
+              pushNotification({
+                key: `${requestId}-error`,
+                level: 'error',
+                variant: 'filled',
+                title: 'Failure',
+                message: message,
+              })
+            );
+          }
+        }
+      },
     }),
     logout: builder.mutation({
       query: () => ({ url: API.ENDPOINTS.LOGOUT, method: 'post' }),
